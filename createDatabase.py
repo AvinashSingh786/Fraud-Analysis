@@ -2,7 +2,7 @@ import sqlite3
 from elizabeth import Personal
 from random import randint, uniform
 from faker import Faker
-
+from sys import stdout
 '''
     Globals
 '''
@@ -58,9 +58,9 @@ def create_database():
            Postal_Code              TEXT);''')
     print("Created Database table successfully!")
 
-    for i in range(0, 1000):
+    for i in range(0, 100000):
         cur.execute("INSERT INTO Claims VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", get_data())
-        print("Inserted: " + str(i))
+        print("\rInserted: " + str(i), end="")
     conn.commit()
     conn.close()
 
