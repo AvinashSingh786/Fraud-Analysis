@@ -1,8 +1,22 @@
 import sqlite3
 from elizabeth import Personal
-from random import randint
+from random import randint, uniform
+from faker import Faker
 
+'''
+    Globals
+'''
 m_status = ("Married", "Single", "Never Married", "Divorced")
+c_loss = ("Fire", "Water", "Theft")
+f_loss = ("No Fire", "No Water", "No Theft")
+i_insurer = ("Santam", "Hollard", "Outsurance", "Discovery", "Absa", "Mutual & Federal", "First for Woman", "Budget", "Miway")
+
+person = Personal('en')
+fake = Faker()
+
+'''
+    Functions
+'''
 
 
 def create_database():
@@ -26,44 +40,84 @@ def create_database():
            Fraudulent_Claim_Reason  TEXT,
            Date_Of_Loss             DATE,
            Date_Of_Claim            DATE,
-           Agency_ID                TEXT,
+           Broker_ID                TEXT,
            Insured_ID               TEXT,
            Kind_Of_Loss             TEXT,
            Claim_Amount             REAL,
            Party_Name               TEXT,
            Party_Surname            TEXT,
            Service_Provider         TEXT,
-           Street                   TEXT,
+           Policy_Holder_Street     TEXT,
+           Policy_Holder_Province   TEXT,
+           Policy_Holder_City       TEXT,
+           Policy_Holder_Area       TEXT,
+           Policy_Holder_Postal     TEXT,
            Province                 TEXT,
            City                     TEXT,
            Area                     TEXT,
            Postal_Code              TEXT);''')
     print("Created Database table successfully!")
-    person = Personal('en')
+
     for i in range(0, 10):
-        cur.execute("INSERT INTO Claims VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", get_data())
+        cur.execute("INSERT INTO Claims VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", get_data())
     conn.commit()
     conn.close()
 
 
 def get_data():
-    person = Personal('en')
-    age = person.age()
-
     return (
         person.name(),
         person.surname(),
-        age,
+        person.age(),
         person.gender(),
         marital_status(),
+        date("-80y", "-18y"),
+        random_real(0, 2000000),
+        random_real(0, 20000),
+        date("-80y", "now"),
+        date("-80y", "now"),
+        "F", "REASON",
+        date("-80y", "now"),
+        date("-80y", "now"),
+        "BKR"+randint(1000, 9999), i_insurer[randint(0, len(i_insurer))],
+        c_loss[randint(0, len(c_loss))],
+        random_real(0, 70000),
+        person.name(),
+        person.surname(),
+        fake.company(),
+        fake.street(),
+        fake.country(),
+        fake.city(),
+        fake.state(),
+        fake.postalcode(),
 
-
-
+        fake.country(),
+        fake.city(),
+        fake.state(),
+        fake.postalcode()
     )
 
 
 def marital_status():
-    return m_status[randint(0, 3)]
+    return m_status[randint(0, len(m_status))]
 
+
+def date(start, end):
+    fake.date_time_between(start, end, tzinfo=None)
+
+
+def random_real(m, mm):
+    return round(uniform(m, mm), 2)
+
+
+print(get_data())
+
+'''
+    Data Cleaning
+        - Check if DOB and age is correct
+        - check claim date
+        - policy expire
+        - amount claim vs insured
+'''
 
 
