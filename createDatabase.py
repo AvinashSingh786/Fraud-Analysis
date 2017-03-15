@@ -25,7 +25,7 @@ def create_database():
     print("Opened database successfully")
 
     cur.execute('''CREATE TABLE IF NOT EXISTS Claims
-           (Claim_ID                INT PRIMARY KEY  AUTOINCREMENT NOT NULL,
+           (Claim_ID                INTEGER PRIMARY KEY  AUTOINCREMENT NOT NULL,
            Name                     TEXT,
            Surname                  TEXT,
            Age                      INTEGER,
@@ -58,9 +58,9 @@ def create_database():
            Postal_Code              TEXT);''')
     print("Created Database table successfully!")
 
-    for i in range(0, 10):
+    for i in range(0, 1000):
         cur.execute("INSERT INTO Claims VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", get_data())
-        print("Inserted: " + i)
+        print("Inserted: " + str(i))
     conn.commit()
     conn.close()
 
@@ -69,6 +69,7 @@ def create_database():
 
 def get_data():
     return (
+        null_val(),
         person.name(),
         person.surname(),
         person.age(),
@@ -112,6 +113,14 @@ def rand_date(start, end):
 def random_real(m, mm):
     return round(uniform(m, mm), 2)
 
+
+def null_val():
+    return None
+'''
+    SCRIPT
+
+'''
+create_database()
 
 '''
     Data Cleaning
