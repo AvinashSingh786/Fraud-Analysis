@@ -60,8 +60,11 @@ def create_database():
 
     for i in range(0, 10):
         cur.execute("INSERT INTO Claims VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", get_data())
+        print("Inserted: " + i)
     conn.commit()
     conn.close()
+
+    print("All data inserted successfully")
 
 
 def get_data():
@@ -71,21 +74,21 @@ def get_data():
         person.age(),
         person.gender(),
         marital_status(),
-        date("-80y", "-18y"),
+        rand_date("-80y", "-18y"),
         random_real(0, 2000000),
         random_real(0, 20000),
-        date("-80y", "now"),
-        date("-80y", "now"),
-        "F", "REASON",
-        date("-80y", "now"),
-        date("-80y", "now"),
-        "BKR"+randint(1000, 9999), i_insurer[randint(0, len(i_insurer))],
-        c_loss[randint(0, len(c_loss))],
+        rand_date("-80y", "now"),
+        rand_date("-80y", "now"),
+        "F", "",
+        rand_date("-80y", "now"),
+        rand_date("-80y", "now"),
+        "BKR"+str(randint(1000, 9999)), i_insurer[randint(0, len(i_insurer)-1)],
+        c_loss[randint(0, len(c_loss)-1)],
         random_real(0, 70000),
         person.name(),
         person.surname(),
         fake.company(),
-        fake.street(),
+        fake.street_name(),
         fake.country(),
         fake.city(),
         fake.state(),
@@ -99,18 +102,16 @@ def get_data():
 
 
 def marital_status():
-    return m_status[randint(0, len(m_status))]
+    return m_status[randint(0, len(m_status)-1)]
 
 
-def date(start, end):
-    fake.date_time_between(start, end, tzinfo=None)
+def rand_date(start, end):
+    return fake.date_time_between(start, end).isoformat()
 
 
 def random_real(m, mm):
     return round(uniform(m, mm), 2)
 
-
-print(get_data())
 
 '''
     Data Cleaning
