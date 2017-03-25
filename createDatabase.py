@@ -6,7 +6,7 @@ from sys import stdout
 '''
     Globals
 '''
-m_status = ("Married", "Single", "Never Married", "Divorced")
+m_status = ("Married", "Single", "Divorced", "Widowed", "Separated")
 c_loss = ("Fire", "Water", "Theft")
 f_loss = ("No Fire", "No Water", "No Theft")
 i_insurer = ("Santam", "Hollard", "Outsurance", "Discovery", "Absa", "Mutual & Federal", "First for Woman", "Budget", "Miway")
@@ -19,7 +19,7 @@ fake = Faker()
 '''
 
 
-def create_database():
+def create_database(val):
     conn = sqlite3.connect('insurance.db')
     cur = conn.cursor()
     print("Opened database successfully")
@@ -58,13 +58,13 @@ def create_database():
            Postal_Code              TEXT);''')
     print("Created Database table successfully!")
 
-    for i in range(0, 100000):
+    for i in range(0, val):
         cur.execute("INSERT INTO Claims VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", get_data())
         print("\rInserted: " + str(i), end="")
     conn.commit()
     conn.close()
 
-    print("All data inserted successfully")
+    print("\nAll data inserted successfully")
 
 
 def get_data():
@@ -75,14 +75,14 @@ def get_data():
         person.age(),
         person.gender(),
         marital_status(),
-        rand_date("-80y", "-18y"),
+        rand_date("-40y", "-18y"),
         random_real(0, 2000000),
         random_real(0, 20000),
-        rand_date("-80y", "now"),
-        rand_date("-80y", "now"),
+        rand_date("-40y", "now"),
+        rand_date("-40y", "now"),
         "F", "",
-        rand_date("-80y", "now"),
-        rand_date("-80y", "now"),
+        rand_date("-18y", "now"),
+        rand_date("-40y", "now"),
         "BKR"+str(randint(1000, 9999)), i_insurer[randint(0, len(i_insurer)-1)],
         c_loss[randint(0, len(c_loss)-1)],
         random_real(0, 70000),
@@ -120,7 +120,7 @@ def null_val():
     SCRIPT
 
 '''
-create_database()
+create_database(1000)
 
 '''
     Data Cleaning
