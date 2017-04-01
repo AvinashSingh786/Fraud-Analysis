@@ -230,10 +230,10 @@ def null_val():
     SCRIPT
 
 '''
-# create_database(10, 2)
-for i in range(0,100):
-    print(get_data(True))
-    print(get_fraud_data())
+create_database(10, 2)
+# for i in range(0,100):
+#     print(get_data(True))
+#     print(get_fraud_data())
 '''
     Data Cleaning
         - Check if DOB and age is correct
