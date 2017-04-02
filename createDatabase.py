@@ -2,9 +2,11 @@ import sqlite3
 from elizabeth import Personal
 from random import randint, uniform
 from faker import Faker
-from datetime import date
+from datetime import date, datetime
 from sys import stdout
 import pickle
+import calendar
+import time
 
 '''
     Globals
@@ -20,15 +22,29 @@ fraud_reasons = ("No Date of birth", "Date of birth and Age do not match", "Clai
 person = Personal('en')
 fake = Faker()
 
+mindate = datetime.strptime('Jun 1 1900  1:33PM', '%b %d %Y %I:%M%p')
+maxdate = datetime.today()
+
+
 '''
     Functions
+'''
+
+
+'''
+    :param n - number of claims to insert
+    :param f - number of fraud claims
 '''
 
 
 def create_database(n, f):
     fraud = set([int(randint(0, n)) for i in range(f)])
     print(fraud)
-    pickle.dump(fraud, open("fraud-index.txt", "wb"))
+    pickle.dump(fraud, open("fraud-pickle.txt", "wb"))
+    text_file = open("fraud-index.txt", "w")
+    text_file.write("%s" % ', '.join(str(e) for e in fraud))
+    text_file.close()
+
     conn = sqlite3.connect('insurance.db')
     cur = conn.cursor()
     print("Opened database successfully")
@@ -68,7 +84,7 @@ def create_database(n, f):
     print("Created Database table successfully!")
 
     for i in range(0, n):
-        if n not in fraud:
+        if i not in fraud:
             cur.execute("INSERT INTO Claims VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                         get_data(True))
             print("\rInserted: " + str(i), end="")
@@ -81,12 +97,21 @@ def create_database(n, f):
 
     print("\nAll data inserted successfully")
 
+'''
+    :param status - sends the function to generate a fraud claim or valid claim
+'''
+
 
 def get_data(status):
-    dob = fake.date_time(tzinfo=None)
+    dob = random_date()
     dateloss = rand_date("-40y", "now")
     policystart = rand_date("-40y", "now")
     suminsured = random_real(200000, 10000000)
+
+    dobiso = dob.isoformat()
+    policystartiso = policystart.isoformat()
+    datelossiso = dateloss.isoformat()
+
     if not status:
         return get_fraud_data()
 
@@ -97,16 +122,16 @@ def get_data(status):
         calculate_age(dob, status),
         person.gender(),
         marital_status(),
-        dob.isoformat(),
+        dobiso,
         suminsured,
         random_real(100, 5000),
-        policystart,
+        policystartiso,
         policy_end(policystart, True),
         "F", "",
-        dateloss,
+        datelossiso,
         date_claim(dateloss, True),
-        "BKR"+str(randint(1000, 9999)), i_insurer[randint(0, len(i_insurer)-1)],
-        c_loss[randint(0, len(c_loss)-1)],
+        "BKR" + str(randint(1000, 9999)), i_insurer[randint(0, len(i_insurer) - 1)],
+        c_loss[randint(0, len(c_loss) - 1)],
         claim_amount(suminsured, True),
         person.name(),
         person.surname(),
@@ -123,20 +148,28 @@ def get_data(status):
         fake.postalcode()
     )
 
+'''
+    function to generate fake data based on the status - False to the helper functions
+'''
+
 
 def get_fraud_data():
-    dob = fake.date_time(tzinfo=None)
+    dob = random_date()
     dateloss = rand_date("-40y", "now")
     policystart = rand_date("-40y", "now")
     suminsured = random_real(200000, 10000000)
     r = randint(1, 9)
     dobiso = dob.isoformat()
+    policystartiso = policystart.isoformat()
+    datelossiso = dateloss.isoformat()
 
     if r == 1:
         dob = ""
         dobiso = ""
+
     if r == 4:
         policystart = ""
+        policystartiso = ""
 
     return (
         null_val(),
@@ -148,10 +181,10 @@ def get_fraud_data():
         dobiso,
         suminsured,
         random_real(100, 5000),
-        policystart,
+        policystartiso,
         policy_end(policystart, r),
-        "T", fraud_reasons[r-1],
-        dateloss,
+        "T", fraud_reasons[r - 1],
+        datelossiso,
         date_claim(dateloss, r),
         "BKR" + str(randint(1000, 9999)), i_insurer[randint(0, len(i_insurer) - 1)],
         c_loss[randint(0, len(c_loss) - 1)],
@@ -181,23 +214,46 @@ def kind_loss(s):
 
 
 def date_claim(loss, s):
+    if loss == "":
+        return ""
     if s == 7:
-        return fake.date_time_between("", loss).isoformat()
-    return fake.date_time_between(loss, "now").isoformat()
+        return date_between(mindate, loss).isoformat()
+    return date_between(loss, maxdate).isoformat()
+
+
+def policy_end(start, s):
+    if start == "":
+        return ""
+    if s == 6:
+        return date_between(mindate, start).isoformat()
+    if s == 5:
+        return ""
+    return date_between(start, maxdate).isoformat()
+
+
+def date_between(s, e):
+    y = randint(s.year, e.year)
+    m = randint(1, 12)
+    d = randint(1, 30)
+
+    if calendar.isleap(y):
+        if m == 2:
+            d = randint(1, 29)
+
+    if m == 2:
+        d = randint(1, 28)
+
+    h = randint(0, 12)
+    i = randint(0, 59)
+    s = randint(0, 59)
+
+    return datetime(y, m, d, h, i, s)
 
 
 def claim_amount(val, s):
     if s == 3:
         return random_real(val, 5000000)
     return random_real(1, val)
-
-
-def policy_end(start, s):
-    if s == 6:
-        return fake.date_time_between("", start).isoformat()
-    if s == 5:
-        return ""
-    return fake.date_time_between(start, "now").isoformat()
 
 
 def calculate_age(born, s):
@@ -212,12 +268,29 @@ def calculate_age(born, s):
 
 
 def marital_status():
-    return m_status[randint(0, len(m_status)-1)]
+    return m_status[randint(0, len(m_status) - 1)]
+
+
+def random_date():
+    y = randint(1920, 1999)
+    m = randint(1, 12)
+    d = randint(1, 30)
+    if calendar.isleap(y):
+        if m == 2:
+            d = randint(1, 29)
+
+    if m == 2:
+        d = randint(1, 28)
+
+    h = randint(0, 12)
+    i = randint(0, 59)
+    s = randint(0, 59)
+
+    return datetime(y, m, d, h, i, s)
 
 
 def rand_date(start, end):
-    # return fake.date_time_between(start, end).isoformat()
-    return fake.date_time(tzinfo=None).isoformat()
+    return fake.date_time_between(start, end)
 
 
 def random_real(m, mm):
@@ -226,14 +299,18 @@ def random_real(m, mm):
 
 def null_val():
     return None
-'''
-    SCRIPT
+
 
 '''
-create_database(10, 2)
-# for i in range(0,100):
-#     print(get_data(True))
-#     print(get_fraud_data())
+    SCRIPT
+    
+    eg. create_database(number of claims, number of fraud claims)
+'''
+
+start_time = time.time()
+create_database(100000, 175)
+print("--- %s seconds ---" % (time.time() - start_time))
+
 '''
     Data Cleaning
         - Check if DOB and age is correct
@@ -241,5 +318,3 @@ create_database(10, 2)
         - policy expire
         - amount claim vs insured
 '''
-
-
