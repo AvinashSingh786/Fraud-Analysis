@@ -16,9 +16,11 @@ c_loss = ("Fire", "Water", "Theft", "Natural Disaster")
 n_loss = ("Borrowed", "Misplaced", "Donated")
 i_insurer = ("Santam", "Hollard", "Outsurance", "Discovery", "Absa", "Mutual & Federal", "First for Woman", "Budget",
              "Miway")
-fraud_reasons = ("No Date of birth", "Date of birth and Age do not match", "Claim amount is more than Sum Insured",
+fraud_reasons = ("No Date of birth", "Date of birth calculated Age and Age do not match",
+                 "Claim amount is more than Sum Insured",
                  "No Policy start date", "No Policy end date", "Policy end date before start date",
-                 "Claim Date before loss", "No kind of loss", "Invalid kind of loss")
+                 "Claim Date before loss", "No kind of loss", "Invalid kind of loss", "No premium but has claim",
+                 "Claim after Policy end date", "Claim before Policy start", "Age is not in requirements")
 person = Personal('en')
 fake = Faker()
 
@@ -111,6 +113,11 @@ def get_data(status):
     dobiso = dob.isoformat()
     policystartiso = policystart.isoformat()
     datelossiso = dateloss.isoformat()
+    policyend = policy_end(policystart, True)
+    if policyend != "":
+        policyendiso = policyend.isoformat()
+    else:
+        policyendiso = ""
 
     if not status:
         return get_fraud_data()
@@ -126,10 +133,10 @@ def get_data(status):
         suminsured,
         random_real(100, 5000),
         policystartiso,
-        policy_end(policystart, True),
+        policyendiso,
         "F", "",
         datelossiso,
-        date_claim(dateloss, True),
+        date_claim(dateloss, policystart, policyend, True),
         "BKR" + str(randint(1000, 9999)), i_insurer[randint(0, len(i_insurer) - 1)],
         c_loss[randint(0, len(c_loss) - 1)],
         claim_amount(suminsured, True),
@@ -157,10 +164,12 @@ def get_fraud_data():
     dob = random_date()
     dateloss = rand_date("-40y", "now")
     policystart = rand_date("-40y", "now")
+
     suminsured = random_real(200000, 10000000)
-    r = randint(1, 9)
+    r = randint(1, len(fraud_reasons)-1)
     dobiso = dob.isoformat()
     policystartiso = policystart.isoformat()
+
     datelossiso = dateloss.isoformat()
 
     if r == 1:
@@ -171,6 +180,13 @@ def get_fraud_data():
         policystart = ""
         policystartiso = ""
 
+    policyend = policy_end(policystart, r)
+
+    if policyend != "":
+        policyendiso = policyend.isoformat()
+    else:
+        policyendiso = ""
+
     return (
         null_val(),
         person.name(),
@@ -180,12 +196,12 @@ def get_fraud_data():
         marital_status(),
         dobiso,
         suminsured,
-        random_real(100, 5000),
+        premium(r),
         policystartiso,
-        policy_end(policystart, r),
+        policyendiso,
         "T", fraud_reasons[r - 1],
         datelossiso,
-        date_claim(dateloss, r),
+        date_claim(dateloss, policystart, policyend, r),
         "BKR" + str(randint(1000, 9999)), i_insurer[randint(0, len(i_insurer) - 1)],
         c_loss[randint(0, len(c_loss) - 1)],
         claim_amount(suminsured, r),
@@ -205,6 +221,12 @@ def get_fraud_data():
     )
 
 
+def premium(s):
+    if s == 10:
+        return 0
+    return random_real(100, 5000)
+
+
 def kind_loss(s):
     if s == 8:
         return ""
@@ -213,11 +235,19 @@ def kind_loss(s):
     return c_loss[randint(0, len(c_loss) - 1)]
 
 
-def date_claim(loss, s):
+def date_claim(loss, policystart, policyend, s):
     if loss == "":
+        return ""
+    if policyend == "":
+        return ""
+    if policystart == "":
         return ""
     if s == 7:
         return date_between(mindate, loss).isoformat()
+    if s == 11:
+        return date_between(policyend, maxdate)
+    if s == 12:
+        return date_between(mindate, policystart)
     return date_between(loss, maxdate).isoformat()
 
 
@@ -225,10 +255,16 @@ def policy_end(start, s):
     if start == "":
         return ""
     if s == 6:
-        return date_between(mindate, start).isoformat()
+        return date_between(mindate, start)
     if s == 5:
         return ""
-    return date_between(start, maxdate).isoformat()
+    return date_between(start, maxdate)
+
+"""
+    This function will randomly generate a date between start and end dates provided
+    :param s - start date 
+    :param e - end date
+"""
 
 
 def date_between(s, e):
@@ -255,12 +291,25 @@ def claim_amount(val, s):
         return random_real(val, 5000000)
     return random_real(1, val)
 
+"""
+    This function will calculate the age depending on the provided date of birth and status, where the status 
+    will determine if a actual or fraudulent age must be created.
+    
+    :param born - date of birth
+    :param s - status
+"""
+
 
 def calculate_age(born, s):
     if s == 2:
         return person.age()
     if s == 4:
         return person.age()
+    if s == 13:
+        if randint(0, 1) == 0:
+            return randint(-10, 15)
+        else:
+            return randint(120, 300)
     if born == "":
         return ""
     today = date.today()
@@ -269,6 +318,11 @@ def calculate_age(born, s):
 
 def marital_status():
     return m_status[randint(0, len(m_status) - 1)]
+
+
+"""
+    This function will generate a random date between 1920 and 1999, which is all validated and caters for leap years 
+"""
 
 
 def random_date():
@@ -308,7 +362,7 @@ def null_val():
 '''
 
 start_time = time.time()
-create_database(100000, 175)
+create_database(100, 10)
 print("--- %s seconds ---" % (time.time() - start_time))
 
 '''
