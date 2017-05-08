@@ -3,7 +3,6 @@ from elizabeth import Personal
 from random import randint, uniform
 from faker import Faker
 from datetime import date, datetime
-from sys import stdout
 import pickle
 import calendar
 import time
@@ -362,7 +361,7 @@ def null_val():
 '''
 
 start_time = time.time()
-create_database(100, 10)
+create_database(100000, 175)
 print("--- %s seconds ---" % (time.time() - start_time))
 
 '''
@@ -371,4 +370,5 @@ print("--- %s seconds ---" % (time.time() - start_time))
         - check claim date
         - policy expire
         - amount claim vs insured
+        - check empty cells
 '''
