@@ -40,7 +40,7 @@ maxdate = datetime.today()
 
 def create_database(n, f):
     fraud = set([int(randint(0, n)) for i in range(f)])
-    print(fraud)
+    # print(fraud)
     pickle.dump(fraud, open("fraud-pickle.txt", "wb"))
     text_file = open("fraud-index.txt", "w")
     text_file.write("%s" % ', '.join(str(e) for e in fraud))
@@ -54,7 +54,7 @@ def create_database(n, f):
            (Claim_ID                INTEGER PRIMARY KEY  AUTOINCREMENT NOT NULL,
            Name                     TEXT,
            Surname                  TEXT,
-           Age                      INTEGER,
+           Age                      INT,
            Gender                   VARCHAR(8),
            Marital_Status           TEXT,
            Date_Of_Birth            DATE,
@@ -113,10 +113,10 @@ def get_data(status):
     policystartiso = policystart.isoformat()
     datelossiso = dateloss.isoformat()
     policyend = policy_end(policystart, True)
-    if policyend != "":
+    if policyend != None:
         policyendiso = policyend.isoformat()
     else:
-        policyendiso = ""
+        policyendiso = None
 
     if not status:
         return get_fraud_data()
@@ -181,10 +181,10 @@ def get_fraud_data():
 
     policyend = policy_end(policystart, r)
 
-    if policyend != "":
+    if policyend != None:
         policyendiso = policyend.isoformat()
     else:
-        policyendiso = ""
+        policyendiso = None
 
     return (
         null_val(),
@@ -228,7 +228,7 @@ def premium(s):
 
 def kind_loss(s):
     if s == 8:
-        return ""
+        return None
     if s == 9:
         return n_loss[randint(0, len(c_loss) - 1)]
     return c_loss[randint(0, len(c_loss) - 1)]
@@ -236,11 +236,11 @@ def kind_loss(s):
 
 def date_claim(loss, policystart, policyend, s):
     if loss == "":
-        return ""
+        return None
     if policyend == "":
-        return ""
+        return None
     if policystart == "":
-        return ""
+        return None
     if s == 7:
         return date_between(mindate, loss).isoformat()
     if s == 11:
@@ -252,11 +252,11 @@ def date_claim(loss, policystart, policyend, s):
 
 def policy_end(start, s):
     if start == "":
-        return ""
+        return None
     if s == 6:
         return date_between(mindate, start)
     if s == 5:
-        return ""
+        return None
     return date_between(start, maxdate)
 
 """
@@ -287,7 +287,15 @@ def date_between(s, e):
 
 def claim_amount(val, s):
     if s == 3:
-        return random_real(val, 5000000)
+        r = randint(0, 100)
+        if r < 60:
+            return random_real(val, 9000)
+        if r > 60 & r < 80:
+            return random_real(val, 50000)
+        if r > 80 & r < 90:
+            return random_real(val, 90000)
+        if r > 90:
+            return random_real(val, 9000000)
     return random_real(1, val)
 
 """
@@ -310,7 +318,7 @@ def calculate_age(born, s):
         else:
             return randint(120, 300)
     if born == "":
-        return ""
+        return None
     today = date.today()
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 

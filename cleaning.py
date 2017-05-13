@@ -17,3 +17,6 @@ def clean_data():
     SCRIPT
 """
 clean_data()
+# df = pd.read_sql("select * from daily_flights", conn)
+# df["delay_minutes"] = None
+# df.to_sql("daily_flights", conn, if_exists="replace")
