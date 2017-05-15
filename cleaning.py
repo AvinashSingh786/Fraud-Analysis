@@ -20,3 +20,14 @@ clean_data()
 # df = pd.read_sql("select * from daily_flights", conn)
 # df["delay_minutes"] = None
 # df.to_sql("daily_flights", conn, if_exists="replace")
+
+# Calculate the mean
+# mean = np.mean(df.Salary)
+
+# Replace missing values with the mean
+# df. = df.Salary.fillna(mean)
+
+
+#    ;; ; ; ;; ; ;
+# df.interpolate()
+#  ' ' ' ' ' ' ' ''
