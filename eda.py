@@ -14,6 +14,11 @@ print(Color.YELLOW + Color.UNDERLINE+ "Reading data ..."+ Color.END)
 df = pd.read_sql_query("SELECT * FROM Claims",conn,  coerce_float=True, parse_dates=["Date_Of_Birth", "Policy_Start",
                                                  "Policy_End", "Date_Of_Loss", "Date_Of_Claim"])
 
+pd.scatter_matrix(df.sample(1000), alpha=0.2, diagonal='hist')
+plt.title('EDA Sample of 1000')
+plt.show()
+
+
 ##### View data to get understanding
 print(Color.DARKCYAN + "\n\n\nHead 5: " + Color.END)
 print(df.head(5))
