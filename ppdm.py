@@ -40,6 +40,9 @@ df['Policy_Holder_Area'] = '*'
 print(Color.DARKCYAN + "\n\n\nPreserve Province" + Color.END)
 df['Province'] = '*'
 
+print(Color.DARKCYAN + "\n\n\nPreserve Area" + Color.END)
+df['Area'] = '*'
+
 print(Color.DARKCYAN + "\n\n\nPreserve Age" + Color.END)
 df['Age'] = df['Age'].astype(str).str[:-3].astype(str) + "*"
 
@@ -51,13 +54,41 @@ df['Date_Of_Birth'] = tmp.astype(str).str[:-11].astype(np.int64)
 print(Color.DARKCYAN + "\n\n\nPreserve Marital Status" + Color.END)
 df['Marital_Status'] = df['Marital_Status'].astype(str).str[0:2].astype(str)
 
-print(Color.DARKCYAN + "\n\n\nPreserve Gender" + Color.END)
+print(Color.DARKCYAN + "\n\n\nPreserve Gender, Insure_ID, Kind_Of_Loss" + Color.END)
 for index, row in df.iterrows():
-    if row.shift(-1)['Gender'] != row['Gender']:
-        row['Gender'] = '*'
+    if index == 0:
+        prev = row['Gender']
+    if prev == row['Gender']:
+        df.loc[index,'Gender'] = '*'
+    prev = row['Gender']
+
+    if index == 0:
+        prevIn = row['Insured_ID']
+    if prevIn == row['Insured_ID']:
+        df.loc[index,'Insured_ID'] = '*'
+    prevIn = row['Insured_ID']
 
 
-# df['range'].str.replace(',','-')
+    if index == 0:
+        prevK = row['Kind_Of_Loss']
+    if prevK == row['Kind_Of_Loss']:
+        df.loc[index,'Kind_Of_Loss'] = '*'
+    prevK = row['Kind_Of_Loss']
+
 print(df.sample(5))
-### Write data from df to database
-# df.to_sql("daily_flights", conn, if_exists="replace")
+
+
+print(Color.DARKCYAN + "\n\n\nPreserve Fraud Claim Indicator" + Color.END)
+df['Fraudulent_Claim'] = df['Fraudulent_Claim'].astype(str).str.replace('T','*').astype(str).str.replace('F','')
+
+print(Color.DARKCYAN + "\n\n\nPreserve Broker ID" + Color.END)
+df['Broker_ID'] = df['Broker_ID'].astype(str).str[3:].astype(np.int64)
+
+print(Color.DARKCYAN + "\n\n\nPreserve Policy_Holder_Postal" + Color.END)
+df['Policy_Holder_Postal'] = df['Policy_Holder_Postal'].astype(str).str[:-2].astype(str) + "**"
+
+print(df.sample(5))
+
+####### Write data from df to database
+print(Color.YELLOW + "\n\n\nWriting Data to Database" + Color.END)
+df.to_sql("Claims", conn, if_exists="replace")
