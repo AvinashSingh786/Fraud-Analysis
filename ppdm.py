@@ -74,6 +74,7 @@ for index, row in df.iterrows():
     if prevK == row['Kind_Of_Loss']:
         df.loc[index,'Kind_Of_Loss'] = '*'
     prevK = row['Kind_Of_Loss']
+    print("\rComplete: " +Color.GREEN+ str((index/100000.0)*100)+ Color.END + "%", end="")
 
 print(df.sample(5))
 
@@ -86,9 +87,9 @@ df['Broker_ID'] = df['Broker_ID'].astype(str).str[3:].astype(np.int64)
 
 print(Color.DARKCYAN + "\n\n\nPreserve Policy_Holder_Postal" + Color.END)
 df['Policy_Holder_Postal'] = df['Policy_Holder_Postal'].astype(str).str[:-2].astype(str) + "**"
-
+df['Claim_ID'] = df['Claim_ID'].astype(int)
 print(df.sample(5))
 
 ####### Write data from df to database
 print(Color.YELLOW + "\n\n\nWriting Data to Database" + Color.END)
-df.to_sql("Claims", conn, if_exists="replace")
+df.to_sql("Claims", conn, if_exists="replace", index=False)
