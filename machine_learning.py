@@ -96,10 +96,10 @@ dot_data = tree.export_graphviz(clf, out_file=None, feature_names=iris.feature_n
 graph = pydotplus.graph_from_dot_data(dot_data)
 graph.write_pdf("insurance.pdf")
 
-
-
-
-
+# ['Sum_Insured', 'Policies_Revenue', 'Broker_ID', 'Claim_Amount']
+# newData = [[9000.00, 200.00, "BK"], [''], []]
+# pred = clf.predict(newData)
+# print(pred)
 
 # del df['index']
 # del df['Claim_ID']
