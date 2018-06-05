@@ -1,9 +1,6 @@
 import pandas as pd
 import numpy as np
 import sqlite3
-import matplotlib.pyplot as plt
-from matplotlib import style
-import seaborn as sns
 from Color import Color
 
 
@@ -12,8 +9,6 @@ conn = sqlite3.connect('insurance.db')
 print(Color.YELLOW + Color.UNDERLINE+ "Reading data ..."+ Color.END)
 df = pd.read_sql_query("SELECT * FROM Claims",conn,  coerce_float=True, parse_dates=["Date_Of_Birth", "Policy_Start",
                                                  "Policy_End", "Date_Of_Loss", "Date_Of_Claim"])
-
-
 
 
 print(Color.DARKCYAN + "\n\n\nPreserve Name " + Color.END)

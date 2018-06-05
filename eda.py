@@ -1,9 +1,7 @@
 import pandas as pd
-import numpy as np
 import sqlite3
 import matplotlib.pyplot as plt
 from matplotlib import style
-import seaborn as sns
 from Color import Color
 
 
