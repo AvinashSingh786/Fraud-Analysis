@@ -1,11 +1,13 @@
 import sqlite3
-from elizabeth import Personal
+from mimesis import Person
 from random import randint, uniform
 from faker import Faker
 from datetime import date, datetime
 import pickle
 import calendar
 import time
+import openpyxl
+from openpyxl.utils.dataframe import dataframe_to_rows
 
 '''
     Globals
@@ -20,7 +22,7 @@ fraud_reasons = ("No Date of birth", "Date of birth calculated Age and Age do no
                  "No Policy start date", "No Policy end date", "Policy end date before start date",
                  "Claim Date before loss", "No kind of loss", "Invalid kind of loss", "No premium but has claim",
                  "Claim after Policy end date", "Claim before Policy start", "Age is not in requirements")
-person = Personal('en')
+person = Person('en')
 fake = Faker()
 
 mindate = datetime.strptime('Jun 1 1900  1:33PM', '%b %d %Y %I:%M%p')
@@ -30,6 +32,40 @@ maxdate = datetime.today()
 '''
     Functions
 '''
+
+'''
+    :param n - number of claims to insert
+    :param f - number of fraud claims
+'''
+
+
+def create_database_excel(n, f):
+    fraud = set([int(randint(0, n)) for i in range(f)])
+    pickle.dump(fraud, open("fraud-pickle.txt", "wb"))
+    text_file = open("fraud-index.txt", "w")
+    text_file.write("%s" % ', '.join(str(e) for e in fraud))
+    text_file.close()
+
+    from openpyxl import load_workbook, Workbook
+    wb = Workbook()
+    ws = wb.active
+
+    ws.append(["Calim_ID","Name","Surname","Age","Gender","Marital_Status","Date_Of_Birth","Sum_Insured","Policies_Revenue","Policy_Start","Policy_End",
+        "Fraudulent_Claim","Fraudulent_Claim_Reason","Date_Of_Loss","Date_Of_Claim","Broker_ID","Insured_ID","Kind_Of_Loss","Claim_Amount",
+        "Party_Name","Party_Surname","Service_Provider","Policy_Holder_Street","Policy_Holder_Province","Policy_Holder_City",
+        "Policy_Holder_Area","Policy_Holder_Postal","Province","City","Area","Postal_Code"])
+
+    for i in range(0, n):
+        if i not in fraud:          
+            ws.append(get_data(True))
+            print("\rInserted: " + str(i), end="")
+        else:
+            ws.append(get_data(False))
+            print("\rInserted: " + str(i), end="")
+
+    print("\nAll data inserted successfully")		
+    wb.save("insurance.xlsx")
+    print("Created Database table successfully!")
 
 
 '''
@@ -369,7 +405,7 @@ def null_val():
 '''
 
 start_time = time.time()
-create_database(100000, 175)
+create_database_excel(100, 175)
 print("--- %s seconds ---" % (time.time() - start_time))
 
 '''

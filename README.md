@@ -4,7 +4,7 @@ A project on fraud analysis of insurance claims.
 ### Requirements
 
     - Python
-        - elizabeth
+        - mimesis (elizabeth is no longer available)
         - faker
         - matplotlib
         - sqlite3
@@ -12,6 +12,7 @@ A project on fraud analysis of insurance claims.
         - pandas
         - sklearn
         - pydotplus
+        - openpyxl
 
 ## Phases
 
