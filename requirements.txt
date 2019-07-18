@@ -1,0 +1,8 @@
+mimesis
+faker
+matplotlib
+numpy
+pandas
+sklearn
+pydotplus
+openpyxl
