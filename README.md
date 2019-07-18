@@ -14,6 +14,13 @@ A project on fraud analysis of insurance claims.
         - pydotplus
         - openpyxl
 
+## Installation
+```bash
+pip install -r requirements.txt
+```
+After the required packages are installed you can simply run the scripts from the phases below.
+
+
 ## Phases
 
 #### Create Database
