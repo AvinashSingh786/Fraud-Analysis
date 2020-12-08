@@ -3,16 +3,20 @@ A project on fraud analysis of insurance claims.
 
 ### Requirements
 
-    - Python
-        - mimesis (elizabeth is no longer available)
-        - faker
-        - matplotlib
-        - sqlite3
-        - numpy
-        - pandas
-        - sklearn
-        - pydotplus
-        - openpyxl
+    - Python3
+        - mimesis     4.1.2 (elizabeth is no longer available)
+        - faker       5.0.1
+        - matplotlib  3.2.0
+        - numpy       1.19.1
+        - pandas      1.1.5
+        - sklearn     0.0
+        - pydotplus   2.0.2
+        - openpyxl    3.0.5
+    - Grahviz
+        - Windows -> https://graphviz.org/download/
+        - Unix -> sudo apt-get install graphviz
+
+Note: This repository isn't maintained often, use at your own discretion. Error handling was not a priority when scripting.
 
 ## Installation
 ```bash
@@ -53,6 +57,3 @@ Machine leaning was used to detect fraudulent insurance claims. This uses a simp
 ```bash
 python machine_learning.py
 ```    
- 
-
- 
