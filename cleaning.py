@@ -23,55 +23,47 @@ df.loc[500, "Policies_Revenue"] = None
 df.loc[100, "Policies_Revenue"] = None
 df.loc[520, "Policies_Revenue"] = None
 df.loc[1, "Policies_Revenue"] = None
+ 
 
-####### Write data from df to database
-# print(Color.YELLOW + "\n\n\nWriting Data to Database" + Color.END)
-# df.to_sql("Claims", conn, if_exists="replace", index=False)
+### Uncomment to remove for anonymization
+# if 'Name' in df.columns:
+#     print(Color.DARKCYAN + "\n\n\nRemove Name" + Color.END) 
+#     del df['Name']
 
-# print(Color.YELLOW + "Opening Database"+ Color.END)
-# conn = sqlite3.connect('insurance.db')
-# print(Color.YELLOW + Color.UNDERLINE+ "Reading data ..."+ Color.END)
-# df = pd.read_sql_query("SELECT * FROM Claims",conn,  coerce_float=True, parse_dates=["Date_Of_Birth", "Policy_Start",
-#                                                  "Policy_End", "Date_Of_Loss", "Date_Of_Claim"])
+# if 'Surname' in df.columns:
+#     print(Color.DARKCYAN + "\n\n\nRemove Surname" + Color.END)
+#     del df['Surname']
 
-if 'Name' in df.columns:
-    print(Color.DARKCYAN + "\n\n\nRemove Name" + Color.END) 
-    del df['Name']
+# if 'Party_Name' in df.columns:
+#     print(Color.DARKCYAN + "\n\n\nRemove Party_Name" + Color.END)
+#     del df['Party_Name']
 
-if 'Surname' in df.columns:
-    print(Color.DARKCYAN + "\n\n\nRemove Surname" + Color.END)
-    del df['Surname']
+# if 'Party_Surname' in df.columns:
+#     print(Color.DARKCYAN + "\n\n\nRemove Party_Surname" + Color.END)
+#     del df['Party_Surname']
 
-if 'Party_Name' in df.columns:
-    print(Color.DARKCYAN + "\n\n\nRemove Party_Name" + Color.END)
-    del df['Party_Name']
+# if 'Policy_Holder_Street' in df.columns:
+#     print(Color.DARKCYAN + "\n\n\nRemove Policy_Holder_Street" + Color.END)
+#     del df['Policy_Holder_Street']
 
-if 'Party_Surname' in df.columns:
-    print(Color.DARKCYAN + "\n\n\nRemove Party_Surname" + Color.END)
-    del df['Party_Surname']
+# if 'Policy_Holder_Area' in df.columns:
+#     print(Color.DARKCYAN + "\n\n\nRemove Policy_Holder_Area" + Color.END)
+#     del df['Policy_Holder_Area']
 
-if 'Policy_Holder_Street' in df.columns:
-    print(Color.DARKCYAN + "\n\n\nRemove Policy_Holder_Street" + Color.END)
-    del df['Policy_Holder_Street']
-
-if 'Policy_Holder_Area' in df.columns:
-    print(Color.DARKCYAN + "\n\n\nRemove Policy_Holder_Area" + Color.END)
-    del df['Policy_Holder_Area']
-
-if 'Province' in df.columns:
-    print(Color.DARKCYAN + "\n\n\nRemove Province" + Color.END)
-    del df['Province']
+# if 'Province' in df.columns:
+#     print(Color.DARKCYAN + "\n\n\nRemove Province" + Color.END)
+#     del df['Province']
     
-if 'Area' in df.columns:
-    print(Color.DARKCYAN + "\n\n\nRemove Area" + Color.END)
-    del df['Area']
+# if 'Area' in df.columns:
+#     print(Color.DARKCYAN + "\n\n\nRemove Area" + Color.END)
+#     del df['Area']
 
-if 'Policy_Holder_City' in df.columns:
-    print(Color.DARKCYAN + "\n\n\nRemove Policy_Holder_City" + Color.END)
-    del df['Policy_Holder_City']
+# if 'Policy_Holder_City' in df.columns:
+#     print(Color.DARKCYAN + "\n\n\nRemove Policy_Holder_City" + Color.END)
+#     del df['Policy_Holder_City']
 
-if 'index' in df.columns:
-    del df['index']
+# if 'index' in df.columns:
+#     del df['index']
 
 
 print(Color.GREEN + "\n\n\nHandle Policy Start and end Date" + Color.END)
@@ -82,8 +74,8 @@ df = df[(df['Date_Of_Claim'] >= df['Date_Of_Loss'])]
 
 
 print(Color.GREEN + "\n\n\nHandle Claim_ID" + Color.END)
-df['Claim_ID'].dropna( how='any', inplace=True )
-df['Claim_ID'] = df['Claim_ID'].astype(int)
+df['Claim_ID'].dropna(inplace=True )
+#df['Claim_ID'] = df['Claim_ID'].astype(int)
 
 
 print(Color.GREEN + "\n\n\nHandle Postal_Code" + Color.END)
@@ -114,6 +106,8 @@ df['Policies_Revenue'].fillna(value=df['Policies_Revenue'].mean(),inplace=True)
 #    ;; ; ; ;; ; ;
 # df.interpolate()91377 91417
 #  ' ' ' ' ' ' ' ''
+print("Done\n\n")
+print(Color.GREEN + "Sample"  + Color.END)
 print(df.head())
 df.dropna( how='any', inplace=True )
 print(df.isnull().sum())

@@ -12,7 +12,7 @@ print(Color.YELLOW + Color.UNDERLINE+ "Reading data ..."+ Color.END)
 df = pd.read_sql_query("SELECT * FROM Claims",conn,  coerce_float=True, parse_dates=["Date_Of_Birth", "Policy_Start",
                                                  "Policy_End", "Date_Of_Loss", "Date_Of_Claim"])
 
-pd.scatter_matrix(df.sample(1000), alpha=0.2, diagonal='hist')
+pd.plotting.scatter_matrix(df.sample(frac=1000, replace=True), alpha=0.2, diagonal='hist')
 plt.title('EDA Sample of 1000')
 plt.show()
 
@@ -60,21 +60,20 @@ df.Age.hist(bins=1000)
 plt.title('Age distribution')
 plt.xlabel('Age')
 plt.ylabel('Frequency')
-plt.show()
 plt.savefig('Age.png')
+plt.show()
 
 print(Color.BLUE+"\n\n\nFrequency of Gender\n "+Color.END)
 print(df['Gender'].value_counts( dropna=False))
 df.groupby('Gender')['Gender'].count().plot( kind='bar', title='Gender Distribution', grid=True, legend=True)
-plt.show()
 plt.savefig('Gender Frequency.png')
+plt.show()
 
 print(Color.BLUE+"\n\n\nFrequency of Marital Status\n "+Color.END)
 print(df['Marital_Status'].value_counts( dropna=False))
 df.groupby('Marital_Status')['Marital_Status'].count().plot( kind='pie', title='Marital Status Distribution', sort_columns=True,  grid=True, legend=True)
-plt.show()
 plt.savefig('Marry Frequency.png')
-
+plt.show()
 
 print(Color.BLUE+"\n\n\nFrequency of Date Of Birth\n "+Color.END)
 print(df['Date_Of_Birth'].value_counts( dropna=False))
@@ -155,9 +154,10 @@ print(df['Postal_Code'].value_counts( dropna=False))
 
 claim = df[(df['Date_Of_Claim'] > '2000-1-1') & (df['Date_Of_Claim'] <= '2000-06-30')]
 claim.info()
-claim.plot( x='Claim_Amount', y='Sum_Insured', title='Claim VS Insured Amount for 2000 -  mid 2000', sort_columns=True, kind='kde' )
-plt.show()
-plt.savefig('Claim VS Insured for 2000.png')
+if claim.shape[0] > 1:
+	claim.plot( x='Claim_Amount', y='Sum_Insured', title='Claim VS Insured Amount for 2000 -  mid 2000', sort_columns=True, kind='kde' )
+	plt.savefig('images/Claim VS Insured for 2000.png')
+	plt.show()
 
 #### Numeric data info
 print(Color.DARKCYAN + "\n\n\nNumeric Data Information: " + Color.END)
@@ -167,68 +167,69 @@ print(df.describe())
 #### Age for gender
 print(Color.CYAN + "Generating figure Gender VS Age"+ Color.END)
 df.groupby('Gender').Age.plot(kind='kde', legend=True, title='Gender vs Age', grid=True)
+plt.savefig('images/Gender VS Age.png')
 plt.show()
-plt.savefig('Gender VS Age.png')
-
 
 #### Frequency of Age [Scaling is needed]
 print(Color.CYAN + "Generating figure Frequency of Age"+ Color.END)
 df.groupby('Age').Age.plot(kind='hist', x='Age', y='Frequency', sort_columns=True, title='Frequency of Ages', grid=True)
+plt.savefig('images/Freq Age.png')
 plt.show()
-plt.savefig('Freq Age.png')
 
 
 #### Number of payout per year
 df.groupby('Fraudulent_Claim')['Claim_Amount'].sum().plot(kind='bar', title='Claim amount for fraud and not fraud', legend=True)
+plt.savefig('images/Claim T&F.png')
 plt.show()
-plt.savefig('Claim T&F.png')
 
 df.groupby('Fraudulent_Claim')['Date_Of_Claim'].count().plot(kind='pie', title='Claim amount per year', legend=True)
+plt.savefig('images/Total Count Claim amount per year.png')
 plt.show()
-plt.savefig('Total Count Claim amount per year.png')
-
 
 #### Sum payouts year
 df.groupby('Date_Of_Claim')['Claim_Amount'].sum().plot(kind='line', title='Claim amount per year', legend=True)
+plt.savefig('images/Total Sum Claim per year.png')
 plt.show()
-plt.savefig('Total Sum Claim per year.png')
-
 
 #### Marital status vs Age
 mar = df.groupby('Marital_Status')['Age'].count().plot( kind='kde', title='Marital Status VS Age', grid=True, legend=True)
+plt.savefig('images/Marry VS Age.png')
 plt.show()
-plt.savefig('Marry VS Age.png')
 
 
 df.plot(x='Age', y='Claim_Amount', kind='scatter', title='Age VS Claim Amount', legend=True)
+plt.savefig('images/Age vs Claim.png')
 plt.show()
-plt.savefig('Age vs Claim.png')
 
-df.plot(x='Sum_Insured', y='Claim_Amount', kind='hist', title='Insured VS Claim Amount', legend=True,normed=True)
+
+df.plot(x='Sum_Insured', y='Claim_Amount', kind='hist', title='Insured VS Claim Amount', legend=True)
+plt.savefig('images/Insured vs Claim.png')
 plt.show()
-plt.savefig('Insured vs Claim.png')
+
 
 df.plot(x='Policies_Revenue', y='Claim_Amount', kind='scatter', title='Policy_Revenue VS Claim Amount', legend=True)
+plt.savefig('images/Policy Rev VS Claim AM.png')
 plt.show()
-plt.savefig('Policy Rev VS Claim AM.png')
+
 
 df['Age'].plot(x='Age', kind='box', title='Age', legend=True)
+plt.savefig('images/Box Age.png')
 plt.show()
-plt.savefig('Box Age.png')
+
 
 df['Sum_Insured'].plot(x='Sum_Insured', kind='box', title='Insured Amount', legend=True)
+plt.savefig('images/Box Insured Amount.png')
 plt.show()
-plt.savefig('BoX Insured Amount.png')
 
 
 df['Policies_Revenue'].plot(x='Policies_Revenue', kind='box', title='Policy Revenue', legend=True)
+plt.savefig('images/Box Policy Rev.png')
 plt.show()
-plt.savefig('Box Policy Rev.png')
+
 
 df.plot(kind='box', title='Numeric Data Box Plot', legend=True)
+plt.savefig('images/Box Num.png')
 plt.show()
-plt.savefig('Box Num.png')
-
 
 
 print("\n\n\nMax Sum Insured: "+str(df['Sum_Insured'].max()))

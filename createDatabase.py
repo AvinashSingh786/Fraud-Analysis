@@ -40,6 +40,7 @@ maxdate = datetime.today()
 
 
 def create_database_excel(n, f):
+    print("Creating Excel DB")
     fraud = set([int(randint(0, n)) for i in range(f)])
     pickle.dump(fraud, open("fraud-pickle.txt", "wb"))
     text_file = open("fraud-index.txt", "w")
@@ -75,6 +76,7 @@ def create_database_excel(n, f):
 
 
 def create_database(n, f):
+    print("Creating SQLITE DB")
     fraud = set([int(randint(0, n)) for i in range(f)])
     # print(fraud)
     pickle.dump(fraud, open("fraud-pickle.txt", "wb"))
@@ -406,6 +408,12 @@ def null_val():
 
 start_time = time.time()
 create_database_excel(100, 175)
+print("--- %s seconds ---" % (time.time() - start_time))
+
+print("\n")
+
+start_time = time.time()
+create_database(100, 175)
 print("--- %s seconds ---" % (time.time() - start_time))
 
 '''
