@@ -1,8 +1,8 @@
-mimesis
-faker
-matplotlib
-numpy
-pandas
-sklearn
-pydotplus
-openpyxl
+mimesis==4.1.2
+faker==5.0.1
+matplotlib==3.2.0
+numpy==1.19.1
+pandas==1.1.5
+sklearn==0.0
+pydotplus==2.0.2
+openpyxl==3.0.5
